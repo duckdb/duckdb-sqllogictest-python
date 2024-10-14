@@ -1,4 +1,5 @@
 import os
+from pathlib import Path;
 
 from typing import List, Optional
 
@@ -416,7 +417,7 @@ class SQLLogicParser:
 
     def parse(self, file_path: str) -> Optional[SQLLogicTest]:
         if not self.open_file(file_path):
-            return None
+            raise SQLParserException(f"Could not find {file_path}")
 
         while self.next_statement():
             token = self.tokenize()
@@ -453,7 +454,7 @@ class SQLLogicParser:
         self.reset()
         self.current_test = SQLLogicTest(path)
         try:
-            with open(path, 'r') as infile:
+            with open(Path(path), 'r') as infile:
                 self.lines = [line.replace("\r", "") for line in infile.readlines()]
                 return True
         except IOError:
