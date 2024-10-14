@@ -429,7 +429,7 @@ class SQLLogicDatabase:
             return
         path = context.get_extension_path(extension)
         # Serialize it as a POSIX compliant path
-        query = f"LOAD 'Path({path})'"
+        query = f"LOAD '{path}'"
         self.database.execute(query)
 
     def connect(self) -> SQLLogicConnectionPool:
