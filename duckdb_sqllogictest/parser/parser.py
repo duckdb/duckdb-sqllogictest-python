@@ -454,12 +454,14 @@ class SQLLogicParser:
         self.reset()
         self.current_test = SQLLogicTest(path)
         try:
-            with open(Path(path), 'r') as infile:
+            with open(Path(path), 'r', encoding='utf8') as infile:
                 self.lines = [line.replace("\r", "") for line in infile.readlines()]
                 return True
         except IOError:
+            # TODO: collect error
             return False
         except UnicodeDecodeError:
+            # TODO: collect error
             return False
 
     def empty_or_comment(self, line):
