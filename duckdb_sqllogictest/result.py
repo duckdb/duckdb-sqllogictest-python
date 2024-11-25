@@ -146,6 +146,9 @@ class QueryResult:
     def get_error(self) -> Optional[Exception]:
         return self.error
 
+    def print(self):
+        print(duck_db_convert_result(self, False))
+
     def check(self, context, query: Query) -> None:
         expected_column_count = query.expected_result.get_expected_column_count()
         values = query.expected_result.lines
@@ -335,7 +338,7 @@ class QueryResult:
             if hash_compare_error:
                 expected_result = self.result_label_map.get(query_label)
                 logger.wrong_result_hash(expected_result, self)
-                self.fail_query(query)
+                context.fail("")
 
             assert not hash_compare_error
 
