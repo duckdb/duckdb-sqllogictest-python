@@ -201,7 +201,7 @@ class SQLLogicPythonRunner:
                 executor.skip_log.append(str(e.message))
                 continue
 
-            print(f'[{i}/{total_tests}] {file_path}')
+            print(f'[{i+1}/{total_tests}] {file_path}')
             # This is necessary to clean up databases/connections
             # So previously created databases are not still cached in the instance_cache
             gc.collect()
