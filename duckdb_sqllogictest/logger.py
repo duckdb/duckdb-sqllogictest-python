@@ -155,17 +155,15 @@ class SQLLogicTestLogger:
         self.print_line_sep()
 
     def wrong_result_hash(self, expected_result, result):
-        if expected_result:
-            expected_result.print()
-        else:
-            print("???")
         self.print_error_header("Wrong result hash!")
         self.print_line_sep()
         self.print_sql()
         self.print_line_sep()
         self.print_header("Expected result:")
+        expected_result.print()
         self.print_line_sep()
         self.print_header("Actual result:")
+        result.print()
         self.print_line_sep()
 
     def unexpected_statement(self, expect_ok, result):
