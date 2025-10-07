@@ -491,7 +491,7 @@ def compare_values(result: QueryResult, actual_str, expected_str, current_column
         return 'DECIMAL' in str(type)
 
     if is_numeric(sql_type):
-        if sql_type in [duckdb.typing.FLOAT, duckdb.typing.DOUBLE]:
+        if sql_type in [duckdb.sqltypes.FLOAT, duckdb.sqltypes.DOUBLE]:
             # ApproxEqual
             expected = convert_value(expected_str, sql_type)
             actual = convert_value(actual_str, sql_type)
@@ -507,7 +507,7 @@ def compare_values(result: QueryResult, actual_str, expected_str, current_column
         actual = convert_value(actual_str, sql_type)
         return expected == actual
 
-    if sql_type == duckdb.typing.BOOLEAN or sql_type.id == 'timestamp with time zone':
+    if sql_type == duckdb.sqltypes.BOOLEAN or sql_type.id == 'timestamp with time zone':
         expected = convert_value(expected_str, sql_type)
         actual = convert_value(actual_str, sql_type)
         return expected == actual
@@ -577,12 +577,12 @@ def sql_logic_test_convert_value(value, sql_type, is_sqlite_test: bool) -> str:
         return 'NULL'
     if is_sqlite_test:
         if sql_type in [
-            duckdb.typing.BOOLEAN,
-            duckdb.typing.DOUBLE,
-            duckdb.typing.FLOAT,
+            duckdb.sqltypes.BOOLEAN,
+            duckdb.sqltypes.DOUBLE,
+            duckdb.sqltypes.FLOAT,
         ] or any([type_str in str(sql_type) for type_str in ['DECIMAL', 'HUGEINT']]):
             return convert_value(value, 'BIGINT::VARCHAR')
-    if sql_type == duckdb.typing.BOOLEAN:
+    if sql_type == duckdb.sqltypes.BOOLEAN:
         return "1" if convert_value(value, sql_type) else "0"
     else:
         res = convert_value(value, 'VARCHAR')
@@ -885,7 +885,7 @@ class SQLLogicContext:
             elif duckdb.ExpectedResultType.CHANGED_ROWS in statement.expected_result_type:
                 conn.execute(sql_query)
                 result = conn.fetchall()
-                query_result = QueryResult(result, [duckdb.typing.BIGINT])
+                query_result = QueryResult(result, [duckdb.sqltypes.BIGINT])
             else:
                 conn.execute(sql_query)
                 result = conn.fetchall()
