@@ -3,6 +3,7 @@ import glob
 from typing import Any, Generator, Optional
 import shutil
 import gc
+import argparse
 
 import duckdb
 
@@ -128,8 +129,6 @@ class SQLLogicTestExecutor(SQLLogicRunner):
             os.remove(loaded_path)
         return res
 
-
-import argparse
 
 class SQLLogicPythonRunner:
     def __init__(self, default_test_directory : Optional[str] = None):

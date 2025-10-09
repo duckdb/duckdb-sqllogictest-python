@@ -56,4 +56,5 @@ __all__ = [
     OnlyIf,
     SQLLogicParser,
     SQLParserException,
+    SQLLogicPythonRunner,
 ]

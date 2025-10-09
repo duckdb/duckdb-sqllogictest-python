@@ -1,6 +1,6 @@
 from pathlib import Path
-
 from typing import List, Optional
+import argparse
 
 from duckdb_sqllogictest.token import Token, TokenType
 
@@ -576,9 +576,6 @@ class SQLLogicParser:
         else:
             self.fail(f"Unrecognized parameter {token}")
             return TokenType.SQLLOGIC_INVALID
-
-
-import argparse
 
 
 def main():
