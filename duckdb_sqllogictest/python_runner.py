@@ -1,4 +1,3 @@
-import sys
 import os
 import glob
 from typing import Any, Generator, Optional

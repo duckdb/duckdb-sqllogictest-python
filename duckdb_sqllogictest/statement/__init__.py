@@ -4,7 +4,6 @@ from .mode import Mode
 from .halt import Halt
 from .load import Load
 from .set import Set
-from .load import Load
 from .query import Query, SortStyle
 from .hash_threshold import HashThreshold
 from .loop import Loop

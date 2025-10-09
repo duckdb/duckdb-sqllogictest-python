@@ -76,7 +76,6 @@ BUILTIN_EXTENSIONS = [
     'icu',
 ]
 
-from duckdb import DuckDBPyConnection
 
 # def patch_execute(method):
 #    def patched_execute(self, *args, **kwargs):
@@ -1008,7 +1007,7 @@ class SQLLogicContext:
             conn.execute(sql_query)
             result = conn.fetchall()
             if expected_result.type == ExpectedResult.Type.ERROR:
-                self.fail(f"Query unexpectedly succeeded")
+                self.fail("Query unexpectedly succeeded")
             if expected_result.type != ExpectedResult.Type.UNKNOWN:
                 assert expected_result.lines == None
         except duckdb.Error as e:
@@ -1122,7 +1121,7 @@ class SQLLogicContext:
             # I think we should support this
             # ... actually the way we set up keywords here, this is already the behavior
             # inside the python sqllogic runner, since contexts are created and destroyed at loop start and end
-            self.skiptest(f"require-env can not be called in a loop")
+            self.skiptest("require-env can not be called in a loop")
         if res is None:
             self.skiptest(f"require-env {key} failed, not set")
         if len(statement.header.parameters) != 1:
