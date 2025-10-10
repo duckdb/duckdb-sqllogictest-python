@@ -76,7 +76,6 @@ BUILTIN_EXTENSIONS = [
     'icu',
 ]
 
-from duckdb import DuckDBPyConnection
 
 # def patch_execute(method):
 #    def patched_execute(self, *args, **kwargs):
@@ -147,7 +146,7 @@ class QueryResult:
         return self._column_count
 
     def has_error(self) -> bool:
-        return self.error != None
+        return self.error is not None
 
     def get_error(self) -> Optional[Exception]:
         return self.error
@@ -157,7 +156,7 @@ class QueryResult:
         values = query.expected_result.lines
         sort_style = query.get_sortstyle()
         query_label = query.get_label()
-        query_has_label = query_label != None
+        query_has_label = query_label is not None
         runner = context.runner
 
         logger = SQLLogicTestLogger(context, query, runner.test.path)
@@ -896,7 +895,7 @@ class SQLLogicContext:
                 conn.execute(sql_query)
                 result = conn.fetchall()
                 query_result = QueryResult(result, [])
-            if expected_result.lines == None:
+            if expected_result.lines is None:
                 return
         except duckdb.Error as e:
             print(e)
@@ -1006,15 +1005,15 @@ class SQLLogicContext:
         expected_result = statement.expected_result
         try:
             conn.execute(sql_query)
-            result = conn.fetchall()
+            conn.fetchall()
             if expected_result.type == ExpectedResult.Type.ERROR:
-                self.fail(f"Query unexpectedly succeeded")
+                self.fail("Query unexpectedly succeeded")
             if expected_result.type != ExpectedResult.Type.UNKNOWN:
-                assert expected_result.lines == None
+                assert expected_result.lines is None
         except duckdb.Error as e:
             if expected_result.type == ExpectedResult.Type.SUCCESS:
                 self.fail(f"Query unexpectedly failed: {str(e)}")
-            if expected_result.lines == None:
+            if expected_result.lines is None:
                 return
             expected = '\n'.join(expected_result.lines)
             if is_regex(expected):
@@ -1093,7 +1092,7 @@ class SQLLogicContext:
             self.runner.extensions.add(param)
             return RequireResult.PRESENT
 
-        if autoload_known_extensions == False:
+        if not autoload_known_extensions:
             try:
                 self.runner.database.load_extension(self, param)
                 self.runner.extensions.add(param)
@@ -1122,7 +1121,7 @@ class SQLLogicContext:
             # I think we should support this
             # ... actually the way we set up keywords here, this is already the behavior
             # inside the python sqllogic runner, since contexts are created and destroyed at loop start and end
-            self.skiptest(f"require-env can not be called in a loop")
+            self.skiptest("require-env can not be called in a loop")
         if res is None:
             self.skiptest(f"require-env {key} failed, not set")
         if len(statement.header.parameters) != 1:

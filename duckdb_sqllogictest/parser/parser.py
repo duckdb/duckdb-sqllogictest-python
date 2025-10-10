@@ -1,7 +1,6 @@
-import os
-from pathlib import Path;
-
+from pathlib import Path
 from typing import List, Optional
+import argparse
 
 from duckdb_sqllogictest.token import Token, TokenType
 
@@ -99,7 +98,6 @@ class SQLLogicParser:
             "<numeric>": ["float", "double"],
             "<integral>": ["tinyint", "smallint", "integer", "bigint", "hugeint"],
             "<signed>": ["tinyint", "smallint", "integer", "bigint", "hugeint"],
-            "<unsigned>": ["utinyint", "usmallint", "uinteger", "ubigint", "uhugeint"],
             "<unsigned>": ["utinyint", "usmallint", "uinteger", "ubigint", "uhugeint"],
             "<all_types_columns>": [
                 "bool",
@@ -216,14 +214,14 @@ class SQLLogicParser:
 
         expected_lines: Optional[List[str]] = self.extract_expected_lines()
         if expected_result.type == ExpectedResult.Type.SUCCESS:
-            if expected_lines != None:
+            if expected_lines is not None:
                 if len(expected_lines) != 0:
                     self.fail(
                         "Failed to parse statement: only statement error can have an expected error message, not statement ok"
                     )
                 expected_result.add_lines(expected_lines)
         elif expected_result.type == ExpectedResult.Type.ERROR or expected_result.type == ExpectedResult.Type.UNKNOWN:
-            if expected_lines != None:
+            if expected_lines is not None:
                 expected_result.add_lines(expected_lines)
             elif not self.current_test.is_sqlite_test():
                 print(statement)
@@ -263,7 +261,7 @@ class SQLLogicParser:
         # extract the expected result
         expected_result = self.get_expected_result('ok')
         expected_lines: Optional[List[str]] = self.extract_expected_lines()
-        if expected_lines != None:
+        if expected_lines is not None:
             expected_result.add_lines(expected_lines)
         expected_result.set_expected_column_count(expected_column_count)
         query.expected_result = expected_result
@@ -429,7 +427,7 @@ class SQLLogicParser:
             # Parse any number of decorators first
             parse_method = self.DECORATORS.get(token.type)
             decorators: List[BaseDecorator] = []
-            while parse_method != None:
+            while parse_method is not None:
                 decorator = parse_method(token)
                 if not decorator:
                     self.fail(f"Parser did not produce a decorator for {token.type.name}")
@@ -578,9 +576,6 @@ class SQLLogicParser:
         else:
             self.fail(f"Unrecognized parameter {token}")
             return TokenType.SQLLOGIC_INVALID
-
-
-import argparse
 
 
 def main():
