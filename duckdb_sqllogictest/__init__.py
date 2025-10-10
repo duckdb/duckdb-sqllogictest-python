@@ -20,6 +20,7 @@ from .statement import (
     Sleep,
     SleepUnit,
     Skip,
+    Unzip,
     Unskip,
 )
 from duckdb_sqllogictest.decorator import SkipIf, OnlyIf
