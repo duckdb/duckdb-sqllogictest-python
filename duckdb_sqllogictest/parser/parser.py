@@ -1,6 +1,9 @@
+import os
 from pathlib import Path
-from typing import List, Optional
+
 import argparse
+
+from typing import List, Optional
 
 from duckdb_sqllogictest.token import Token, TokenType
 
@@ -23,6 +26,7 @@ from duckdb_sqllogictest.statement import (
     Reconnect,
     Sleep,
     Skip,
+    Unzip,
     Unskip,
     SortStyle,
 )
@@ -86,6 +90,7 @@ class SQLLogicParser:
             TokenType.SQLLOGIC_RESTART: self.statement_restart,
             TokenType.SQLLOGIC_RECONNECT: self.statement_reconnect,
             TokenType.SQLLOGIC_SLEEP: self.statement_sleep,
+            TokenType.SQLLOGIC_UNZIP: self.statement_unzip,
             TokenType.SQLLOGIC_INVALID: None,
         }
         self.DECORATORS = {
@@ -93,7 +98,17 @@ class SQLLogicParser:
             TokenType.SQLLOGIC_ONLY_IF: self.decorator_onlyif,
         }
         self.FOREACH_COLLECTIONS = {
-            "<compression>": ["none", "uncompressed", "rle", "bitpacking", "dictionary", "fsst", "alp", "alprd"],
+            "<compression>": [
+                "none",
+                "uncompressed",
+                "rle",
+                "bitpacking",
+                "dictionary",
+                "fsst",
+                "dict_fsst",
+                "alp",
+                "alprd",
+            ],
             "<alltypes>": ["bool", "interval", "varchar"],
             "<numeric>": ["float", "double"],
             "<integral>": ["tinyint", "smallint", "integer", "bigint", "hugeint"],
@@ -214,14 +229,14 @@ class SQLLogicParser:
 
         expected_lines: Optional[List[str]] = self.extract_expected_lines()
         if expected_result.type == ExpectedResult.Type.SUCCESS:
-            if expected_lines is not None:
+            if expected_lines != None:
                 if len(expected_lines) != 0:
                     self.fail(
                         "Failed to parse statement: only statement error can have an expected error message, not statement ok"
                     )
                 expected_result.add_lines(expected_lines)
         elif expected_result.type == ExpectedResult.Type.ERROR or expected_result.type == ExpectedResult.Type.UNKNOWN:
-            if expected_lines is not None:
+            if expected_lines != None:
                 expected_result.add_lines(expected_lines)
             elif not self.current_test.is_sqlite_test():
                 print(statement)
@@ -261,7 +276,7 @@ class SQLLogicParser:
         # extract the expected result
         expected_result = self.get_expected_result('ok')
         expected_lines: Optional[List[str]] = self.extract_expected_lines()
-        if expected_lines is not None:
+        if expected_lines != None:
             expected_result.add_lines(expected_lines)
         expected_result.set_expected_column_count(expected_column_count)
         query.expected_result = expected_result
@@ -324,7 +339,7 @@ class SQLLogicParser:
         parameters = header.parameters
         if len(parameters) < 1:
             self.fail("set requires at least 1 parameter (e.g. set ignore_error_messages HTTP Error)")
-        accepted_options = ['ignore_error_messages', 'always_fail_error_messages']
+        accepted_options = ['ignore_error_messages', 'always_fail_error_messages', 'seed']
         if parameters[0] in accepted_options:
             error_messages = []
             # Parse the parameter list as a comma separated list of strings that can contain spaces
@@ -344,6 +359,8 @@ class SQLLogicParser:
         statement = Load(header, self.current_line + 1)
         if len(header.parameters) > 1 and header.parameters[1] == "readonly":
             statement.set_readonly()
+        if len(header.parameters) > 2:
+            statement.set_version(header.parameters[2])
         return statement
 
     def statement_loop(self, header: Token) -> Optional[BaseStatement]:
@@ -402,8 +419,31 @@ class SQLLogicParser:
         sleep_unit = get_sleep_unit(header.parameters[1])
         if sleep_unit == SleepUnit.UNKNOWN:
             options = ['second', 'millisecond', 'microsecond', 'nanosecond']
-            raise self.fail(f"Unrecognized sleep mode - expected {create_formatted_list(options)}")
+            self.fail(f"Unrecognized sleep mode - expected {create_formatted_list(options)}")
         return Sleep(header, self.current_line + 1, sleep_duration, sleep_unit)
+
+    def statement_unzip(self, header: Token) -> Optional[BaseStatement]:
+        params = header.parameters
+        if len(params) != 1 and len(params) != 2:
+            docs = """
+                unzip requires 1 parameter, the path to a (g)zipped file.
+                Optionally a destination location can be provided, defaulting to '__TEST_DIR__/<base_name>'
+            """
+            self.fail(docs)
+
+        source = params[0]
+
+        accepted_filetypes = {'.gz'}
+
+        basename = os.path.basename(source)
+        stem, extension = os.path.splitext(basename)
+        if extension not in accepted_filetypes:
+            accepted_options = ", ".join(list(accepted_filetypes))
+            self.fail(
+                f"unzip: input does not end in a valid file extension ({extension}), accepted options are: {accepted_options}"
+            )
+        destination = params[1] if len(params) == 2 else f'__TEST_DIR__/{stem}'
+        return Unzip(header, self.current_line + 1, source, destination)
 
     # Decorators
 
@@ -427,7 +467,7 @@ class SQLLogicParser:
             # Parse any number of decorators first
             parse_method = self.DECORATORS.get(token.type)
             decorators: List[BaseDecorator] = []
-            while parse_method is not None:
+            while parse_method != None:
                 decorator = parse_method(token)
                 if not decorator:
                     self.fail(f"Parser did not produce a decorator for {token.type.name}")
@@ -533,6 +573,7 @@ class SQLLogicParser:
             TokenType.SQLLOGIC_RESTART,
             TokenType.SQLLOGIC_RECONNECT,
             TokenType.SQLLOGIC_SLEEP,
+            TokenType.SQLLOGIC_UNZIP,
         ]
 
         if token.type in single_line_statements:
@@ -568,6 +609,7 @@ class SQLLogicParser:
             "load": TokenType.SQLLOGIC_LOAD,
             "restart": TokenType.SQLLOGIC_RESTART,
             "reconnect": TokenType.SQLLOGIC_RECONNECT,
+            "unzip": TokenType.SQLLOGIC_UNZIP,
             "sleep": TokenType.SQLLOGIC_SLEEP,
         }
 
@@ -576,7 +618,6 @@ class SQLLogicParser:
         else:
             self.fail(f"Unrecognized parameter {token}")
             return TokenType.SQLLOGIC_INVALID
-
 
 def main():
     parser = argparse.ArgumentParser(description="SQL Logic Parser")

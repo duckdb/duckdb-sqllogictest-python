@@ -20,12 +20,12 @@ from .statement import (
     Sleep,
     SleepUnit,
     Skip,
+    Unzip,
     Unskip,
 )
 from duckdb_sqllogictest.decorator import SkipIf, OnlyIf
 from duckdb_sqllogictest.expected_result import ExpectedResult
 from duckdb_sqllogictest.parser import SQLLogicParser, SQLParserException
-from duckdb_sqllogictest.python_runner import SQLLogicPythonRunner
 
 __all__ = [
     TokenType,
@@ -51,10 +51,10 @@ __all__ = [
     Sleep,
     SleepUnit,
     Skip,
+    Unzip,
     Unskip,
     SkipIf,
     OnlyIf,
     SQLLogicParser,
-    SQLParserException,
-    SQLLogicPythonRunner,
+    SQLParserException
 ]
