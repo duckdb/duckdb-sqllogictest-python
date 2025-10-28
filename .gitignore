@@ -1,2 +1,4 @@
 # Compiled python
 *.pyc
+build/
+*.egg-info
