@@ -442,7 +442,8 @@ class SQLLogicParser:
             self.fail(
                 f"unzip: input does not end in a valid file extension ({extension}), accepted options are: {accepted_options}"
             )
-        destination = params[1] if len(params) == 2 else f'__TEST_DIR__/{stem}'
+        # Handles `NULL` case here so downstream code doesn't have to bother about it
+        destination = params[1] if len(params) == 2 and params[1] != 'NULL' else f'__TEST_DIR__/{stem}'
         return Unzip(header, self.current_line + 1, source, destination)
 
     # Decorators

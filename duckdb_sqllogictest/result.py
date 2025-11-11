@@ -943,7 +943,7 @@ class SQLLogicContext:
     def execute_skip(self, statement: Skip):
         self.runner.skip()
 
-    def execute_unzip(self, statement: Unzip):
+    def do_execute_unzip(self, statement: Unzip):
         import gzip
         import shutil
 
@@ -953,6 +953,10 @@ class SQLLogicContext:
         with gzip.open(source, 'rb') as f_in:
             with open(destination, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
+        return destination
+
+    def execute_unzip(self, statement: Unzip):
+        destination = self.do_execute_unzip(statement)
         print(f"Extracted to '{destination}'")
 
     def execute_unskip(self, statement: Unskip):
@@ -1247,7 +1251,7 @@ class SQLLogicContext:
                     yield None
                     context.remove_keyword(key)
 
-            loop_context = SQLLogicContext(self.pool, self.runner, statements, self.keywords.copy(), update_value)
+            loop_context = self.__class__(self.pool, self.runner, statements, self.keywords.copy(), update_value)
             try:
                 loop_context.execute()
             except TestException:
@@ -1257,8 +1261,8 @@ class SQLLogicContext:
             for val in range(loop.start, loop.end):
                 # FIXME: these connections are expected to have the same settings
                 # So we need to apply the cached settings to them
-                contexts[(loop.name, val)] = SQLLogicContext(
-                    self.runner.database.connect(),
+                contexts[(loop.name, val)] = self.__class__(
+                    self.runner.database.connect() if self.runner.database else None,
                     self.runner,
                     statements,
                     self.keywords.copy(),
@@ -1301,7 +1305,7 @@ class SQLLogicContext:
                     for key in loop_keys:
                         context.remove_keyword(key)
 
-            loop_context = SQLLogicContext(self.pool, self.runner, statements, self.keywords.copy(), update_value)
+            loop_context = self.__class__(self.pool, self.runner, statements, self.keywords.copy(), update_value)
             loop_context.execute()
         else:
             # parallel loop: launch threads
