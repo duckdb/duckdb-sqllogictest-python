@@ -15,7 +15,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         "duckdb",
-        "termcolor"
+        "termcolor",
+        "pytest"
     ],
     extras_require={
     },
