@@ -1149,8 +1149,7 @@ class SQLLogicContext:
         ).fetchone()[0]
         if param == "no_extension_autoloading":
             if autoload_known_extensions:
-                # If autoloading is on, we skip this test
-                return RequireResult.MISSING
+                connection.execute("SET autoload_known_extensions=false")
             return RequireResult.PRESENT
 
         allow_unsigned_extensions = connection.execute(
