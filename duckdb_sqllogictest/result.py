@@ -1167,7 +1167,7 @@ class SQLLogicContext:
                 excluded_from_autoloading = False
                 break
 
-        if param in self.runner.extension_map:
+        if self.runner.get_extension_path(param):
             self.runner.database.load_extension(self, param)
             self.runner.extensions.add(param)
             return RequireResult.PRESENT
