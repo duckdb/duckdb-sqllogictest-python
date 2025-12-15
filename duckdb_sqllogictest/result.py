@@ -1130,6 +1130,10 @@ class SQLLogicContext:
             if param == 'skip_reload':
                 self.runner.skip_reload = True
                 return RequireResult.PRESENT
+            if param == 'notwindows' and os.name != 'nt':
+                return RequireResult.PRESENT
+            if param == 'windows' and os.name == 'nt':
+                return RequireResult.PRESENT
             return RequireResult.MISSING
 
         # Already loaded
