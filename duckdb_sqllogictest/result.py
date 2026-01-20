@@ -25,6 +25,7 @@ from duckdb_sqllogictest.statement import (
     Unzip,
     SortStyle,
     Unskip,
+    Tags,
 )
 
 from duckdb_sqllogictest.expected_result import ExpectedResult
@@ -803,6 +804,7 @@ class SQLLogicContext:
             Unzip: self.execute_unzip,
             Loop: self.execute_loop,
             Foreach: self.execute_foreach,
+            Tags: self.execute_tags,
             Endloop: None,  # <-- should never be encountered outside of Loop/Foreach
         }
 
@@ -1284,6 +1286,10 @@ class SQLLogicContext:
                     # Propagate the exception
                     self.error = context.error
                     raise self.error
+
+    def execute_tags(self, _tags: Tags):
+        # Tags are ignored in this implementation
+        pass
 
     def execute_foreach(self, foreach: Foreach):
         statements = self.get_loop_statements()

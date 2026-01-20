@@ -15,6 +15,7 @@ from .restart import Restart
 from .reconnect import Reconnect
 from .sleep import Sleep, SleepUnit
 from .unzip import Unzip
+from .tags import Tags
 
 from .skip import Skip, Unskip
 
@@ -39,4 +40,5 @@ __all__ = [
     Unzip,
     Unskip,
     SortStyle,
+    Tags,
 ]

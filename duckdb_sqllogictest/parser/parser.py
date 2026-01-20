@@ -29,6 +29,7 @@ from duckdb_sqllogictest.statement import (
     Unzip,
     Unskip,
     SortStyle,
+    Tags,
 )
 from duckdb_sqllogictest.statement.sleep import get_sleep_unit, SleepUnit
 
@@ -91,6 +92,7 @@ class SQLLogicParser:
             TokenType.SQLLOGIC_RECONNECT: self.statement_reconnect,
             TokenType.SQLLOGIC_SLEEP: self.statement_sleep,
             TokenType.SQLLOGIC_UNZIP: self.statement_unzip,
+            TokenType.SQLLOGIC_TAGS: self.statement_tags,
             TokenType.SQLLOGIC_INVALID: None,
         }
         self.DECORATORS = {
@@ -422,6 +424,10 @@ class SQLLogicParser:
             self.fail(f"Unrecognized sleep mode - expected {create_formatted_list(options)}")
         return Sleep(header, self.current_line + 1, sleep_duration, sleep_unit)
 
+
+    def statement_tags(self, header: Token) -> Optional[BaseStatement]:
+        return Tags(header, self.current_line + 1)
+
     def statement_unzip(self, header: Token) -> Optional[BaseStatement]:
         params = header.parameters
         if len(params) != 1 and len(params) != 2:
@@ -574,6 +580,7 @@ class SQLLogicParser:
             TokenType.SQLLOGIC_RESTART,
             TokenType.SQLLOGIC_RECONNECT,
             TokenType.SQLLOGIC_SLEEP,
+            TokenType.SQLLOGIC_TAGS,
             TokenType.SQLLOGIC_UNZIP,
         ]
 
@@ -612,11 +619,13 @@ class SQLLogicParser:
             "reconnect": TokenType.SQLLOGIC_RECONNECT,
             "unzip": TokenType.SQLLOGIC_UNZIP,
             "sleep": TokenType.SQLLOGIC_SLEEP,
+            "tags": TokenType.SQLLOGIC_TAGS,
         }
 
         if token in token_map:
             return token_map[token]
         else:
+            print("heeeeerrre")
             self.fail(f"Unrecognized parameter {token}")
             return TokenType.SQLLOGIC_INVALID
 

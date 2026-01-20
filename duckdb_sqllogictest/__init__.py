@@ -20,6 +20,7 @@ from .statement import (
     Sleep,
     SleepUnit,
     Skip,
+    Tags,
     Unzip,
     Unskip,
 )
@@ -55,6 +56,7 @@ __all__ = [
     Unskip,
     SkipIf,
     OnlyIf,
+    Tags,
     SQLLogicParser,
     SQLParserException
 ]
