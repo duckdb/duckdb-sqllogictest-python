@@ -23,6 +23,7 @@ class TokenType(Enum):
     SQLLOGIC_RECONNECT = auto()
     SQLLOGIC_SLEEP = auto()
     SQLLOGIC_UNZIP = auto()
+    SQLLOGIC_TAGS = auto()
 
 
 class Token:
