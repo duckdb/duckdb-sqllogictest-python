@@ -625,7 +625,6 @@ class SQLLogicParser:
         if token in token_map:
             return token_map[token]
         else:
-            print("heeeeerrre")
             self.fail(f"Unrecognized parameter {token}")
             return TokenType.SQLLOGIC_INVALID
 
