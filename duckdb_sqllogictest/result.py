@@ -17,6 +17,7 @@ from duckdb_sqllogictest.statement import (
     Foreach,
     Endloop,
     RequireEnv,
+    Reset,
     Restart,
     Reconnect,
     Sleep,
@@ -798,6 +799,7 @@ class SQLLogicContext:
             Sleep: self.execute_sleep,
             Reconnect: self.execute_reconnect,
             Halt: self.execute_halt,
+            Reset: self.execute_reset,
             Restart: self.execute_restart,
             HashThreshold: self.execute_hash_threshold,
             Set: self.execute_set,
@@ -966,6 +968,9 @@ class SQLLogicContext:
 
     def execute_halt(self, statement: Halt):
         self.skiptest("HALT was encountered in file")
+
+    def execute_reset(self, statement: Reset):
+        pass # Ignored for now
 
     def execute_restart(self, statement: Restart):
         if self.is_parallel:

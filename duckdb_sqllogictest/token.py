@@ -16,6 +16,7 @@ class TokenType(Enum):
     SQLLOGIC_FOREACH = auto()
     SQLLOGIC_CONCURRENT_FOREACH = auto()
     SQLLOGIC_ENDLOOP = auto()
+    SQLLOGIC_RESET = auto()
     SQLLOGIC_REQUIRE = auto()
     SQLLOGIC_REQUIRE_ENV = auto()
     SQLLOGIC_LOAD = auto()
