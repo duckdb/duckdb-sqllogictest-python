@@ -11,6 +11,7 @@ from .loop import Loop
 from .foreach import Foreach
 from .endloop import Endloop
 from .require_env import RequireEnv
+from .reset import Reset
 from .restart import Restart
 from .reconnect import Reconnect
 from .sleep import Sleep, SleepUnit
@@ -32,6 +33,7 @@ __all__ = [
     Foreach,
     Endloop,
     RequireEnv,
+    Reset,
     Restart,
     Reconnect,
     Sleep,

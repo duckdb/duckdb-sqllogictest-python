@@ -22,6 +22,7 @@ from duckdb_sqllogictest.statement import (
     Foreach,
     Endloop,
     RequireEnv,
+    Reset,
     Restart,
     Reconnect,
     Sleep,
@@ -88,6 +89,7 @@ class SQLLogicParser:
             TokenType.SQLLOGIC_ENDLOOP: self.statement_endloop,
             TokenType.SQLLOGIC_REQUIRE_ENV: self.statement_require_env,
             TokenType.SQLLOGIC_LOAD: self.statement_load,
+            TokenType.SQLLOGIC_RESET: self.statement_reset,
             TokenType.SQLLOGIC_RESTART: self.statement_restart,
             TokenType.SQLLOGIC_RECONNECT: self.statement_reconnect,
             TokenType.SQLLOGIC_SLEEP: self.statement_sleep,
@@ -331,6 +333,9 @@ class SQLLogicParser:
             return Unskip(header, self.current_line + 1)
         else:
             return Mode(header, self.current_line + 1, parameter)
+
+    def statement_reset(self, header: Token) -> Optional[BaseStatement]:
+        return Reset(header, self.current_line + 1)
 
     def statement_require(self, header: Token) -> Optional[BaseStatement]:
         if len(header.parameters) < 1:
@@ -577,6 +582,7 @@ class SQLLogicParser:
             TokenType.SQLLOGIC_REQUIRE,
             TokenType.SQLLOGIC_REQUIRE_ENV,
             TokenType.SQLLOGIC_LOAD,
+            TokenType.SQLLOGIC_RESET,
             TokenType.SQLLOGIC_RESTART,
             TokenType.SQLLOGIC_RECONNECT,
             TokenType.SQLLOGIC_SLEEP,
@@ -615,6 +621,7 @@ class SQLLogicParser:
             "require": TokenType.SQLLOGIC_REQUIRE,
             "require-env": TokenType.SQLLOGIC_REQUIRE_ENV,
             "load": TokenType.SQLLOGIC_LOAD,
+            "reset": TokenType.SQLLOGIC_RESET,
             "restart": TokenType.SQLLOGIC_RESTART,
             "reconnect": TokenType.SQLLOGIC_RECONNECT,
             "unzip": TokenType.SQLLOGIC_UNZIP,
