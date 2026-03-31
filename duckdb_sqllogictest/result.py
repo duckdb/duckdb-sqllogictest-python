@@ -470,10 +470,18 @@ def matches_regex(input: str, actual_str: str) -> bool:
         should_match = False
         regex_str = input.replace("<!REGEX>:", "")
     # The exact match will never be the same, allow leading and trailing messages
+    # Extract leading inline flags (e.g. (?s), (?i)) so they stay at position 0
+    # after prepending '.*', as Python 3.11+ requires global flags at the start.
+    leading_flags = ""
+    flag_match = re.match(r'^(\(\?[aiLmsux]+\))', regex_str)
+    if flag_match:
+        leading_flags = flag_match.group(1)
+        regex_str = regex_str[len(leading_flags):]
     if regex_str[:2] != '.*':
         regex_str = ".*" + regex_str
     if regex_str[-2:] != '.*':
         regex_str = regex_str + '.*'
+    regex_str = leading_flags + regex_str
 
     re_options = re.DOTALL
     re_pattern = re.compile(regex_str, re_options)
