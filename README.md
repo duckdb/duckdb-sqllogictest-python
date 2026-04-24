@@ -8,7 +8,16 @@ This is a library for running SQLLogicTest tests on the DuckDB database engine. 
 
 ## Usage
 
-The SQLLogicTest runner can be used through pytest, for example:
+The SQLLogicTest runner can be used through pytest, for example, when running from an installed version of DuckDB SQLLogicTest:
+
+```bash
+python3 -m sqllogic.test_sqllogic --duckdb-root-dir $HOME/duckdb --path test/sql/types/list/list_distinct.test
+```
+
+or if running locally:
+
 ```bash
 python3 -m pytest sqllogic/test_sqllogic.py --duckdb-root-dir $HOME/duckdb --path test/sql/types/list/list_distinct.test
 ```
+
+Note that the `--duckdb-root-dir` can be an external extension directory as well.

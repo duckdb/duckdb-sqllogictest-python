@@ -1145,6 +1145,10 @@ class SQLLogicContext:
             if param == 'skip_reload':
                 self.runner.skip_reload = True
                 return RequireResult.PRESENT
+            if param == 'notwindows' and os.name != 'nt':
+                return RequireResult.PRESENT
+            if param == 'windows' and os.name == 'nt':
+                return RequireResult.PRESENT
             return RequireResult.MISSING
 
         # Already loaded
@@ -1160,8 +1164,7 @@ class SQLLogicContext:
         ).fetchone()[0]
         if param == "no_extension_autoloading":
             if autoload_known_extensions:
-                # If autoloading is on, we skip this test
-                return RequireResult.MISSING
+                connection.execute("SET autoload_known_extensions=false")
             return RequireResult.PRESENT
 
         allow_unsigned_extensions = connection.execute(
@@ -1179,7 +1182,7 @@ class SQLLogicContext:
                 excluded_from_autoloading = False
                 break
 
-        if param in self.runner.extension_map:
+        if self.runner.get_extension_path(param):
             self.runner.database.load_extension(self, param)
             self.runner.extensions.add(param)
             return RequireResult.PRESENT
